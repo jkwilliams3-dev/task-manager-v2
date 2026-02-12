@@ -84,9 +84,20 @@ export const useFilteredTasks = () => {
     if (filter === 'active' && task.completed) return false;
     if (filter === 'completed' && !task.completed) return false;
 
-    // Filter by search query
-    if (searchQuery && !task.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
+    // Filter by search query (check title, description, tags, category, priority, date)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const searchableFields = [
+        task.title.toLowerCase(),
+        task.description?.toLowerCase() || '',
+        ...(task.tags?.map(tag => tag.toLowerCase()) || []),
+        task.category.toLowerCase(),
+        task.priority.toLowerCase(),
+        task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '',
+      ];
+      
+      const matches = searchableFields.some(field => field.includes(query));
+      if (!matches) return false;
     }
 
     // Filter by category
