@@ -67,14 +67,14 @@ export const TaskForm = () => {
 
   const priorityColors = {
     low: darkMode 
-      ? 'bg-emerald-600 hover:bg-emerald-700 text-white' 
-      : 'bg-emerald-500 hover:bg-emerald-600 text-white',
+      ? 'bg-emerald-700 hover:bg-emerald-800 text-white' 
+      : 'bg-emerald-700 hover:bg-emerald-800 text-white',
     medium: darkMode 
-      ? 'bg-amber-600 hover:bg-amber-700 text-white' 
-      : 'bg-amber-500 hover:bg-amber-600 text-white',
+      ? 'bg-amber-700 hover:bg-amber-800 text-white' 
+      : 'bg-amber-700 hover:bg-amber-800 text-white',
     high: darkMode 
       ? 'bg-red-600 hover:bg-red-700 text-white' 
-      : 'bg-red-500 hover:bg-red-600 text-white',
+      : 'bg-red-600 hover:bg-red-700 text-white',
   };
 
   const inputClasses = darkMode
