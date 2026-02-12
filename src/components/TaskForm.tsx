@@ -106,15 +106,13 @@ export const TaskForm = () => {
             } focus:outline-none pr-14`}
             aria-label="Task title"
           />
-          <motion.button
+          <button
             type="submit"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary-800 hover:bg-primary-700 p-2.5 rounded-lg transition-colors border border-transparent"
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary-800 hover:bg-primary-700 p-2.5 rounded-lg transition-colors"
             aria-label="Add task"
           >
             <Plus className="w-5 h-5 text-white" />
-          </motion.button>
+          </button>
         </div>
 
         {/* Expanded Fields */}
