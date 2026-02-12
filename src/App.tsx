@@ -10,10 +10,10 @@ function App() {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-500 ${
+      className={`min-h-screen transition-colors duration-300 ${
         darkMode
-          ? 'bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900'
-          : 'bg-gradient-to-br from-blue-50 to-indigo-100'
+          ? 'bg-slate-900'
+          : 'bg-slate-100'
       }`}
     >
       <Toaster
@@ -21,9 +21,10 @@ function App() {
         toastOptions={{
           duration: 3000,
           style: {
-            background: darkMode ? '#1f2937' : '#ffffff',
-            color: darkMode ? '#ffffff' : '#1f2937',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: darkMode ? '#1e293b' : '#ffffff',
+            color: darkMode ? '#ffffff' : '#1e293b',
+            border: darkMode ? '1px solid #334155' : '1px solid #e2e8f0',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
           },
         }}
       />
@@ -35,12 +36,12 @@ function App() {
         <TaskList />
 
         {/* Footer */}
-        <footer className="text-center mt-12 text-gray-500">
-          <p className="text-sm">
-            Built with React 18, TypeScript, Framer Motion, and Tailwind CSS
+        <footer className={`text-center mt-12 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+          <p className="text-sm font-medium">
+            Built with React 19, TypeScript, Framer Motion, and Tailwind CSS
           </p>
           <p className="text-xs mt-2">
-            Featuring glassmorphism, drag-and-drop, advanced filtering, and smooth animations
+            Professional task management with drag-and-drop, advanced filtering, and 508 compliance
           </p>
         </footer>
       </div>

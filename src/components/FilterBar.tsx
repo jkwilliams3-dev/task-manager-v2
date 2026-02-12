@@ -26,6 +26,7 @@ export const FilterBar = () => {
     setSelectedCategory,
     selectedPriority,
     setSelectedPriority,
+    darkMode,
   } = useTaskStore();
 
   const hasActiveFilters = selectedCategory || selectedPriority || searchQuery;
@@ -37,25 +38,32 @@ export const FilterBar = () => {
     setFilter('all');
   };
 
+  const inputClasses = darkMode
+    ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus:border-blue-500'
+    : 'bg-white border-slate-300 text-slate-900 placeholder-slate-500 focus:border-blue-600';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.3 }}
+      transition={{ duration: 0.3, delay: 0.25 }}
       className="mb-6 space-y-4"
     >
       {/* Search and Status Filter */}
-      <div className="glass rounded-xl p-4">
+      <div className={`rounded-lg p-5 ${darkMode ? 'card-solid' : 'card-solid-light'}`}>
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${
+              darkMode ? 'text-slate-400' : 'text-slate-500'
+            }`} />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tasks..."
-              className="w-full bg-white/5 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+              className={`w-full border rounded-lg pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${inputClasses}`}
+              aria-label="Search tasks"
             />
           </div>
 
@@ -65,13 +73,17 @@ export const FilterBar = () => {
               <motion.button
                 key={option.value}
                 onClick={() => setFilter(option.value)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`px-5 py-2.5 rounded-lg font-semibold transition-all border ${
                   filter === option.value
-                    ? 'gradient-primary text-white shadow-lg shadow-purple-500/30'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    ? 'bg-primary-800 text-white border-transparent shadow-md'
+                    : darkMode
+                      ? 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                      : 'bg-slate-50 text-slate-700 border-slate-300 hover:bg-slate-100'
                 }`}
+                aria-label={`Filter: ${option.label}`}
+                aria-pressed={filter === option.value}
               >
                 {option.label}
               </motion.button>
@@ -84,18 +96,25 @@ export const FilterBar = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="glass rounded-xl p-4"
+        transition={{ delay: 0.3 }}
+        className={`rounded-lg p-5 ${darkMode ? 'card-solid' : 'card-solid-light'}`}
       >
-        <div className="flex items-center gap-2 mb-3">
-          <Filter className="w-4 h-4 text-gray-400" />
-          <span className="text-sm font-medium text-gray-400">Advanced Filters</span>
+        <div className="flex items-center gap-2 mb-4">
+          <Filter className={`w-4 h-4 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`} />
+          <span className={`text-sm font-semibold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+            Advanced Filters
+          </span>
           {hasActiveFilters && (
             <motion.button
               onClick={clearFilters}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="ml-auto text-xs text-gray-400 hover:text-red-400 flex items-center gap-1 transition-colors"
+              className={`ml-auto text-xs font-medium flex items-center gap-1 px-2 py-1 rounded transition-colors ${
+                darkMode
+                  ? 'text-slate-400 hover:text-red-400 hover:bg-red-900/20'
+                  : 'text-slate-600 hover:text-red-600 hover:bg-red-50'
+              }`}
+              aria-label="Clear all filters"
             >
               <X className="w-3 h-3" />
               Clear All
@@ -106,17 +125,20 @@ export const FilterBar = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Category Filter */}
           <div className="space-y-2">
-            <label className="text-xs text-gray-400">Filter by Category</label>
+            <label className={`text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              Filter by Category
+            </label>
             <select
               value={selectedCategory || ''}
               onChange={(e) => setSelectedCategory(e.target.value || null)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500 transition-colors"
+              className={`w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${inputClasses}`}
+              aria-label="Filter by category"
             >
-              <option value="" className="bg-gray-900">
+              <option value="" className={darkMode ? 'bg-slate-800' : 'bg-white'}>
                 All Categories
               </option>
               {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat} className="bg-gray-900">
+                <option key={cat} value={cat} className={darkMode ? 'bg-slate-800' : 'bg-white'}>
                   {cat}
                 </option>
               ))}
@@ -125,17 +147,20 @@ export const FilterBar = () => {
 
           {/* Priority Filter */}
           <div className="space-y-2">
-            <label className="text-xs text-gray-400">Filter by Priority</label>
+            <label className={`text-sm font-medium ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              Filter by Priority
+            </label>
             <select
               value={selectedPriority || ''}
               onChange={(e) => setSelectedPriority((e.target.value as Priority) || null)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500 transition-colors"
+              className={`w-full border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${inputClasses}`}
+              aria-label="Filter by priority"
             >
-              <option value="" className="bg-gray-900">
+              <option value="" className={darkMode ? 'bg-slate-800' : 'bg-white'}>
                 All Priorities
               </option>
               {PRIORITIES.map((p) => (
-                <option key={p.value} value={p.value} className="bg-gray-900">
+                <option key={p.value} value={p.value} className={darkMode ? 'bg-slate-800' : 'bg-white'}>
                   {p.label}
                 </option>
               ))}
@@ -149,23 +174,28 @@ export const FilterBar = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mt-4 flex flex-wrap gap-2"
+            role="list"
+            aria-label="Active filters"
           >
             {searchQuery && (
               <FilterChip
                 label={`Search: "${searchQuery}"`}
                 onRemove={() => setSearchQuery('')}
+                darkMode={darkMode}
               />
             )}
             {selectedCategory && (
               <FilterChip
                 label={`Category: ${selectedCategory}`}
                 onRemove={() => setSelectedCategory(null)}
+                darkMode={darkMode}
               />
             )}
             {selectedPriority && (
               <FilterChip
                 label={`Priority: ${selectedPriority}`}
                 onRemove={() => setSelectedPriority(null)}
+                darkMode={darkMode}
               />
             )}
           </motion.div>
@@ -178,20 +208,29 @@ export const FilterBar = () => {
 interface FilterChipProps {
   label: string;
   onRemove: () => void;
+  darkMode: boolean;
 }
 
-const FilterChip = ({ label, onRemove }: FilterChipProps) => {
+const FilterChip = ({ label, onRemove, darkMode }: FilterChipProps) => {
   return (
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
-      className="px-3 py-1 bg-purple-500/20 border border-purple-500/30 rounded-full text-sm text-purple-300 flex items-center gap-2"
+      className={`px-3 py-1.5 rounded-md text-sm font-medium flex items-center gap-2 ${
+        darkMode
+          ? 'bg-blue-900/50 border border-blue-700 text-blue-200'
+          : 'bg-blue-50 border border-blue-300 text-blue-700'
+      }`}
+      role="listitem"
     >
       {label}
       <button
         onClick={onRemove}
-        className="hover:text-red-400 transition-colors"
+        className={`transition-colors font-bold text-base ${
+          darkMode ? 'hover:text-red-400' : 'hover:text-red-600'
+        }`}
+        aria-label={`Remove filter: ${label}`}
       >
         <X className="w-3 h-3" />
       </button>

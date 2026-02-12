@@ -22,7 +22,7 @@ import { TaskItem } from './TaskItem';
 
 export const TaskList = () => {
   const tasks = useFilteredTasks();
-  const { reorderTasks } = useTaskStore();
+  const { reorderTasks, darkMode } = useTaskStore();
   const allTasks = useTaskStore((state) => state.tasks);
 
   const sensors = useSensors(
@@ -56,15 +56,15 @@ export const TaskList = () => {
   const categories = Object.keys(tasksByCategory);
 
   if (tasks.length === 0) {
-    return <EmptyState />;
+    return <EmptyState darkMode={darkMode} />;
   }
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.4 }}
-      className="space-y-6"
+      transition={{ duration: 0.3, delay: 0.3 }}
+      className="space-y-5"
     >
       <DndContext
         sensors={sensors}
@@ -76,6 +76,7 @@ export const TaskList = () => {
             key={category}
             category={category}
             tasks={tasksByCategory[category]}
+            darkMode={darkMode}
           />
         ))}
       </DndContext>
@@ -86,9 +87,10 @@ export const TaskList = () => {
 interface CategorySectionProps {
   category: string;
   tasks: ReturnType<typeof useFilteredTasks>;
+  darkMode: boolean;
 }
 
-const CategorySection = ({ category, tasks }: CategorySectionProps) => {
+const CategorySection = ({ category, tasks, darkMode }: CategorySectionProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const categoryIcons: Record<string, string> = {
@@ -107,15 +109,25 @@ const CategorySection = ({ category, tasks }: CategorySectionProps) => {
       {/* Category Header */}
       <motion.button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
-        className="w-full glass rounded-xl p-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+        whileHover={{ scale: 1.005 }}
+        whileTap={{ scale: 0.995 }}
+        className={`w-full rounded-lg p-4 flex items-center justify-between transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          darkMode
+            ? 'bg-slate-800 border border-slate-700 hover:bg-slate-750 shadow-sm'
+            : 'bg-white border border-slate-300 hover:bg-slate-50 shadow-sm'
+        }`}
+        aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${category} category`}
+        aria-expanded={!isCollapsed}
       >
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{categoryIcons[category] || '📁'}</span>
+          <span className="text-2xl" role="img" aria-label={category}>
+            {categoryIcons[category] || '📁'}
+          </span>
           <div className="text-left">
-            <h3 className="font-semibold text-white">{category}</h3>
-            <p className="text-sm text-gray-400">
+            <h3 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              {category}
+            </h3>
+            <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
               {activeTasks.length} active, {completedTasks.length} completed
             </p>
           </div>
@@ -123,7 +135,8 @@ const CategorySection = ({ category, tasks }: CategorySectionProps) => {
         <motion.div
           animate={{ rotate: isCollapsed ? -90 : 0 }}
           transition={{ duration: 0.2 }}
-          className="text-gray-400"
+          className={darkMode ? 'text-slate-400' : 'text-slate-600'}
+          aria-hidden="true"
         >
           ▼
         </motion.div>
@@ -136,8 +149,8 @@ const CategorySection = ({ category, tasks }: CategorySectionProps) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="space-y-2"
+            transition={{ duration: 0.25 }}
+            className="space-y-3"
           >
             <SortableContext
               items={tasks.map((t) => t.id)}
@@ -153,10 +166,12 @@ const CategorySection = ({ category, tasks }: CategorySectionProps) => {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="pt-3"
+                  transition={{ delay: 0.15 }}
+                  className="pt-2"
                 >
-                  <div className="text-sm text-gray-500 mb-2 px-2">
+                  <div className={`text-sm font-semibold mb-2 px-2 ${
+                    darkMode ? 'text-slate-500' : 'text-slate-600'
+                  }`}>
                     Completed ({completedTasks.length})
                   </div>
                   {completedTasks.map((task, index) => (
@@ -176,24 +191,36 @@ const CategorySection = ({ category, tasks }: CategorySectionProps) => {
   );
 };
 
-const EmptyState = () => {
+interface EmptyStateProps {
+  darkMode: boolean;
+}
+
+const EmptyState = ({ darkMode }: EmptyStateProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
+      initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      className="glass rounded-2xl p-12 text-center"
+      transition={{ duration: 0.3 }}
+      className={`rounded-lg p-16 text-center ${
+        darkMode ? 'card-solid' : 'card-solid-light'
+      }`}
     >
       <motion.div
         animate={{ y: [0, -10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <Inbox className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+        <Inbox className={`w-20 h-20 mx-auto mb-4 ${
+          darkMode ? 'text-slate-600' : 'text-slate-400'
+        }`} />
       </motion.div>
-      <h3 className="text-xl font-semibold text-gray-400 mb-2">
+      <h3 className={`text-2xl font-bold mb-2 ${
+        darkMode ? 'text-slate-300' : 'text-slate-700'
+      }`}>
         No tasks found
       </h3>
-      <p className="text-gray-500">
+      <p className={`text-base ${
+        darkMode ? 'text-slate-500' : 'text-slate-600'
+      }`}>
         Create your first task or adjust your filters
       </p>
     </motion.div>
