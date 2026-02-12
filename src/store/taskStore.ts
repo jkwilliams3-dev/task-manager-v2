@@ -1,11 +1,32 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Task, TaskStore, Priority } from '../types';
+import { seedTasks } from '../data/seedTasks';
+
+// Check if this is the first load (no existing data in localStorage)
+const isFirstLoad = () => {
+  const stored = localStorage.getItem('task-manager-storage');
+  return !stored;
+};
+
+// Load seed data on first visit
+const getInitialTasks = (): Task[] => {
+  if (isFirstLoad()) {
+    return seedTasks.map((task) => ({
+      ...task,
+      id: crypto.randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
+    }));
+  }
+  return [];
+};
 
 const useTaskStore = create<TaskStore>()(
   persist(
     (set) => ({
-      tasks: [],
+      tasks: getInitialTasks(),
       filter: 'all',
       searchQuery: '',
       selectedCategory: null,
